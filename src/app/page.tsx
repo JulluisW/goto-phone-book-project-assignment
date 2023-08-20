@@ -1,6 +1,9 @@
-import { ContactList } from "@/components";
-import client from "@/lib/apollo-client";
+//API
 import { gql } from "@apollo/client";
+import client from "@/lib/apollo-client";
+
+//Components
+import { ContactList } from "@/components";
 
 export default async function Home() {
   const { data } = await client.query({
@@ -33,8 +36,9 @@ export default async function Home() {
 
   return (
     <main>
-      <div>Contacts</div>
-      <ContactList contacts={data.contact} />
+      
+        <ContactList contacts={data.contact} />
+   
     </main>
   );
 }
