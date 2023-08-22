@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 //API
 import { css } from "@emotion/css";
@@ -9,30 +11,48 @@ import { Global, css as cssR } from "@emotion/react";
 //Constants
 import { dummy_contacts_list } from "@/constants/contacts";
 
+//Styles
+import * as styles from "./styles";
+
 //Types
 type Props = {
-  contacts: [];
+  contacts: any;
 };
 
-export function ContactList({ contacts }: Props) {
+export function ContactList({ contacts = [] }: Props) {
+  //Constants
+  const router = useRouter();
+
+  console.log(contacts, ",<<<<<");
+
   // const [contactList, setContactList] = useState([dummy_contacts_list]);
   // useEffect(() => {
   //   setContactList(contacts);
   // }, [contacts]);
+
+  // Functions
+  const onHandleAddContact = () => {
+    router.push("/contacts/add");
+  };
+
+  console.log(contacts, "<<<");
 
   return (
     <div>
       <Global
         styles={cssR`
           * {
-            color: white;
+            color: gray;
             font-family: 'Open Sans', sans-serif;
           }
         `}
       />
 
       <div>
-        <h1>Favourites</h1>
+        <div className={styles.header_style}>
+          <h1>Favourites</h1>
+          <button onClick={onHandleAddContact}>+</button>
+        </div>
         <ul
           className={css`
             overflow: scroll;
@@ -41,7 +61,7 @@ export function ContactList({ contacts }: Props) {
             padding: 0 0 10px 0;
           `}
         >
-          {dummy_contacts_list.map((contact: any) => (
+          {contacts.map((contact: any) => (
             <li
               className={css`
                 list-style: none;
