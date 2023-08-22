@@ -1,15 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 
 //API
-import { css } from "@emotion/css";
-import { Global, css as cssR } from "@emotion/react";
-
-//Constants
-import { dummy_contacts_list } from "@/constants/contacts";
+import { Global } from "@emotion/react";
 
 //Styles
 import * as styles from "./styles";
@@ -23,71 +19,31 @@ export function ContactList({ contacts = [] }: Props) {
   //Constants
   const router = useRouter();
 
-  console.log(contacts, ",<<<<<");
-
-  // const [contactList, setContactList] = useState([dummy_contacts_list]);
-  // useEffect(() => {
-  //   setContactList(contacts);
-  // }, [contacts]);
-
   // Functions
   const onHandleAddContact = () => {
     router.push("/contacts/add");
   };
 
-  console.log(contacts, "<<<");
-
   return (
     <div>
-      <Global
-        styles={cssR`
-          * {
-            color: gray;
-            font-family: 'Open Sans', sans-serif;
-          }
-        `}
-      />
-
+      <Global styles={styles.global_style} />
       <div>
-        <div className={styles.header_style}>
-          <h1>Favourites</h1>
-          <button onClick={onHandleAddContact}>+</button>
+        <div className={styles.favourite_header_style}>
+          <h1 className={styles.title_style}>Favourites</h1>
+          <button className={styles.add_button_style} onClick={onHandleAddContact}>+</button>
         </div>
-        <ul
-          className={css`
-            overflow: scroll;
-            display: flex;
-            gap: 10px;
-            padding: 0 0 10px 0;
-          `}
-        >
+        <ul className={styles.favourite_scroller_container_style}>
           {contacts.map((contact: any) => (
             <li
-              className={css`
-                list-style: none;
-              `}
+              className={styles.favourite_item_container_style}
               key={contact.id}
             >
               <img
-                className={css`
-                  border-radius: 50%;
-                  height: 60px;
-                  width: 60px;
-                `}
+                className={styles.favourite_contact_image_style}
                 src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541"
                 alt={contact.first_name}
               />
-              <span
-                className={css`
-                  text-align: center;
-                  display: inline-block;
-                  width: 60px;
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  font-size: 10px;
-                `}
-              >
+              <span className={styles.favourite_contact_name_style}>
                 {contact.first_name}
               </span>
             </li>
@@ -95,28 +51,12 @@ export function ContactList({ contacts = [] }: Props) {
         </ul>
       </div>
       <div>
-        <h1>All Contacts</h1>
-
-        <ul
-          className={css`
-            overflow: scroll;
-            height: calc(100vh - 300px);
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-          `}
-        >
-          {dummy_contacts_list.map((contact: any) => (
+        <h1 className={styles.title_style}>All Contacts</h1>
+        <ul className={styles.contacts_scroller_container_style}>
+          {contacts.map((contact: any) => (
             <li
               key={contact.id}
-              className={css`
-                border-radius: 4px;
-                padding: 5px 10px;
-                list-style: none;
-                // box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-                border-bottom: 1px solid rgba(211, 211, 211, 0.425);
-              `}
+              className={styles.contacts_item_container_style}
             >
               {contact.last_name} {contact.first_name}
               {contact.phones.map((phone: { number: string }) => (

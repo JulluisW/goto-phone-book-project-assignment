@@ -9,11 +9,11 @@ import { ContactList } from "@/components";
 import useContactAPI from "@/hooks/useContactAPI";
 
 export default async function ContactsPage() {
-  const { fetchContactList } = useContactAPI();
+  const { fetchContactList } = await useContactAPI();
 
   return (
     <main>
-      <ContactList contacts={fetchContactList()} />
+      <ContactList contacts={await fetchContactList()} />
     </main>
   );
 }
