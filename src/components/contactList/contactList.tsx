@@ -9,6 +9,7 @@ import { Global } from "@emotion/react";
 
 //Styles
 import * as styles from "./styles";
+import { ContactCard } from "..";
 
 //Types
 type Props = {
@@ -30,7 +31,15 @@ export function ContactList({ contacts = [] }: Props) {
       <div>
         <div className={styles.favourite_header_style}>
           <h1 className={styles.title_style}>Favourites</h1>
-          <button className={styles.add_button_style} onClick={onHandleAddContact}>+</button>
+          <button
+            className={styles.add_button_style}
+            onClick={onHandleAddContact}
+          >
+            +
+          </button>
+          <button onClick={() => localStorage.setItem("myCat", "Tom")}>
+            tambah locak
+          </button>
         </div>
         <ul className={styles.favourite_scroller_container_style}>
           {contacts.map((contact: any) => (
@@ -54,15 +63,13 @@ export function ContactList({ contacts = [] }: Props) {
         <h1 className={styles.title_style}>All Contacts</h1>
         <ul className={styles.contacts_scroller_container_style}>
           {contacts.map((contact: any) => (
-            <li
-              key={contact.id}
-              className={styles.contacts_item_container_style}
-            >
-              {contact.last_name} {contact.first_name}
-              {contact.phones.map((phone: { number: string }) => (
-                <span key={phone.number}>- {phone.number}</span>
-              ))}
-            </li>
+            <ContactCard
+              props={{
+                first_name: contact.first_name,
+                last_name: contact.last_name,
+                phones: contact.phones,
+              }}
+            />
           ))}
         </ul>
       </div>
