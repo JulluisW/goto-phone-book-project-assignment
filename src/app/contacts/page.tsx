@@ -1,7 +1,3 @@
-//API
-import { gql } from "@apollo/client";
-import client from "@/lib/apollo-client";
-
 //Components
 import { ContactList } from "@/components";
 
@@ -9,11 +5,16 @@ import { ContactList } from "@/components";
 import useContactAPI from "@/hooks/useContactAPI";
 
 export default async function ContactsPage() {
-  const { fetchContactList } = await useContactAPI();
+  //Constants
+  const { fetchContactList, fetchPaginationData } = useContactAPI();
 
   return (
     <main>
-      <ContactList contacts={await fetchContactList()} />
+      <ContactList
+        paging={await fetchPaginationData()}
+        contacts={await fetchContactList(1)}
+        // contacts={[]}
+      />
     </main>
   );
 }

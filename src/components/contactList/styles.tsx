@@ -3,7 +3,6 @@ import { css as cssR } from "@emotion/react";
 
 export const global_style = cssR`
 * {
-  color: gray;
   font-family: 'Open Sans', sans-serif;
 }
 `;
@@ -11,8 +10,8 @@ export const global_style = cssR`
 export const favourite_header_style = css`
   width: 100%;
   display: flex;
-  justify-content: space-between;
   margin: 0;
+  justify-content: space-between;
 `;
 
 export const title_style = css`
@@ -36,6 +35,9 @@ export const favourite_scroller_container_style = css`
 
 export const favourite_item_container_style = css`
   list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 export const favourite_contact_image_style = css`
@@ -58,9 +60,6 @@ export const contacts_scroller_container_style = css`
   overflow-y: scroll;
   height: calc(100vh - 300px);
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 `;
 
 export const contacts_item_container_style = css`

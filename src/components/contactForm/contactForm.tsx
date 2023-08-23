@@ -4,70 +4,56 @@
 import React, { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
-//API
-import { gql } from "@apollo/client";
-import client from "@/lib/apollo-client";
+//Components
+import { Input } from "antd";
 
 //Styles
 import * as styles from "./styles";
 
+//Hooks
+import useContactAPI from "@/hooks/useContactAPI";
+
 //Types
 type Props = {
   type: "add" | "edit";
+  datas: Contact | null;
 };
 
-export function ContactForm({ type = "add" }: Props) {
+type Contact = {
+  __typename: string;
+  first_name: string;
+  id: number;
+  last_name: string;
+  phones: Phone[];
+};
+
+type Phone = {
+  number: string;
+};
+
+export function ContactForm({ type = "add", datas }: Props) {
   //States
-  const [phones, setPhones] = useState([{ number: "" }]);
+  const [firstName, setFirstName] = useState(datas?.first_name || "");
+  const [lastName, setLastName] = useState(datas?.last_name || "");
+  const [phones, setPhones] = useState(datas?.phones || [{ number: "" }]);
   const [, updateState] = useState({});
   const forceUpdate = useCallback(() => updateState({}), []);
 
   //Constants
   const router = useRouter();
+  const { addContact } = useContactAPI();
 
   // Functions
   const onHandleSubmitContact = async () => {
     try {
-      const { data } = await client.mutate({
-        mutation: gql`
-          mutation AddContactWithPhones(
-            $first_name: String!
-            $last_name: String!
-            $phones: [phone_insert_input!]!
-          ) {
-            insert_contact(
-              objects: {
-                first_name: $first_name
-                last_name: $last_name
-                phones: { data: $phones }
-              }
-            ) {
-              returning {
-                first_name
-                last_name
-                id
-                phones {
-                  number
-                }
-              }
-            }
-          }
-        `,
-        variables: {
-          first_name: "Tommi",
-          last_name: "Immot",
-          phones: [
-            {
-              number: "+34580438095435",
-            },
-            {
-              number: "+345435435345",
-            },
-          ],
-        },
+      const data = await addContact({
+        first_name: firstName,
+        last_name: lastName,
+        phones: phones,
       });
 
       console.log(data);
+      router.push("/contacts");
     } catch (error) {
       console.log(error);
     }
@@ -77,33 +63,37 @@ export function ContactForm({ type = "add" }: Props) {
     <div className={styles.contact_form_container}>
       <div className={styles.contact_form_input_container}>
         <label htmlFor="first_name">First Name:</label>
-        <input
+        <Input
           className={styles.contact_input}
           type="text"
           name="first_name"
           id="first_name"
+          value={firstName}
+          onChange={({ target: { value } }) => setFirstName(value)}
         />
       </div>
       <div className={styles.contact_form_input_container}>
         <label htmlFor="last_name">Last Name:</label>
-        <input
+        <Input
           className={styles.contact_input}
           type="text"
           name="last_name"
           id="last_name"
+          value={lastName}
+          onChange={({ target: { value } }) => setLastName(value)}
         />
       </div>
       <div className={styles.contact_form_input_container}>
         <label>Phones:</label>
         <div className={styles.contact_phone_inputs_container}>
           {phones.map((phone, idx) => (
-            <input
+            <Input
               className={styles.contact_input}
               key={idx}
               type="text"
               name="phones"
               id="phones"
-              value={phone.number}
+              value={phone?.number}
               onChange={(e) => {
                 const output = phones;
                 output[idx].number = e.target.value;

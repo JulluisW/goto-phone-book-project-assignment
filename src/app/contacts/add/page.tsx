@@ -11,7 +11,7 @@ export default async function AddContactPage() {
   return (
     <main>
       <div className={styles.add_contact_title}>ADD CONTACTS</div>
-      <ContactForm type="add" />
+      <ContactForm type="add" datas={null} />
     </main>
   );
 }
