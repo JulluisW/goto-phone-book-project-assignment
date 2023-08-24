@@ -16,7 +16,7 @@ import useContactAPI from "@/hooks/useContactAPI";
 //Types
 type Props = {
   type: "add" | "edit";
-  datas: Contact | null;
+  datas: Contact;
 };
 
 type Contact = {
@@ -41,10 +41,10 @@ export function ContactForm({ type = "add", datas }: Props) {
 
   //Constants
   const router = useRouter();
-  const { addContact } = useContactAPI();
+  const { addContact, editContact } = useContactAPI();
 
   // Functions
-  const onHandleSubmitContact = async () => {
+  const onHandleAddContact = async () => {
     try {
       const data = await addContact({
         first_name: firstName,
@@ -56,6 +56,36 @@ export function ContactForm({ type = "add", datas }: Props) {
       router.push("/contacts");
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const onHandleEditContact = async () => {
+    try {
+      console.log(">>>", {
+        id: datas.id,
+        first_name: firstName,
+        last_name: lastName,
+      });
+
+      const data = await editContact({
+        id: datas.id,
+        first_name: firstName,
+        last_name: lastName,
+      });
+      console.log(1);
+
+      console.log(data);
+      router.push("/contacts");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onHandleSubmitData = () => {
+    if (type == "add") {
+      onHandleAddContact();
+    } else if (type == "edit") {
+      onHandleEditContact();
     }
   };
 
@@ -113,7 +143,7 @@ export function ContactForm({ type = "add", datas }: Props) {
       </div>
       <div className={styles.contact_form_buttons_container}>
         <button onClick={() => router.push("/contacts")}>Cancel</button>
-        <button onClick={onHandleSubmitContact}>Submit</button>
+        <button onClick={onHandleSubmitData}>Submit</button>
       </div>
     </div>
   );

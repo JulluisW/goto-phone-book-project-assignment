@@ -12,7 +12,11 @@ export default async function EditContactPage(props: any) {
   //Constants
   const { fetchContactByPk } = useContactAPI();
 
-  const current_user = await fetchContactByPk(props.params.id);
+  const current_user = await fetchContactByPk(Number(props.params.id));
+  console.log(Number(props.params.id));
+
+  console.log(current_user);
+
   if (current_user === null) {
     redirect("/contacts");
   }

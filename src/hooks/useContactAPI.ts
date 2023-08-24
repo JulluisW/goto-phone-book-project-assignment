@@ -141,6 +141,43 @@ export default function useContactAPI() {
     }
   };
 
+  const editContact = async ({
+    id,
+    first_name,
+    last_name,
+  }: {
+    id: any;
+    first_name: string;
+    last_name: string;
+  }) => {
+    try {
+      const { data } = await client.mutate({
+        mutation: gql`
+          mutation EditContactById($id: Int!, $_set: contact_set_input) {
+            update_contact_by_pk(pk_columns: { id: $id }, _set: $_set) {
+              id
+              first_name
+              last_name
+              phones {
+                number
+              }
+            }
+          }
+        `,
+        variables: {
+          id: id,
+          _set: {
+            first_name: first_name,
+            last_name: last_name,
+          },
+        },
+      });
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const deleteContact = async (contactId: number) => {
     try {
       const { data } = await client.query({
@@ -170,6 +207,7 @@ export default function useContactAPI() {
     fetchPaginationData,
     fetchContactByPk,
     addContact,
+    editContact,
     deleteContact,
   };
 }

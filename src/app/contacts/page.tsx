@@ -13,7 +13,6 @@ export default async function ContactsPage() {
       <ContactList
         paging={await fetchPaginationData()}
         contacts={await fetchContactList(1)}
-        // contacts={[]}
       />
     </main>
   );

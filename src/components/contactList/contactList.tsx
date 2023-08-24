@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 //API
@@ -48,6 +48,21 @@ export function ContactList({ paging = 0, contacts = [] }: Props) {
       console.log(error);
     }
   };
+
+  const fetchCon = async () => {
+    try {
+      fetchContactList(1).then((data) => {
+        console.log(data);
+        setContactList(data);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCon();
+  }, []);
 
   return (
     <div>
