@@ -118,7 +118,7 @@ export default function useContactAPI() {
       });
       return data.contact;
     } catch (error) {
-      console.log("error", error);
+      console.log(error);
 
       return "Contact's not found!";
     }
@@ -231,7 +231,7 @@ export default function useContactAPI() {
       });
       return data;
     } catch (error) {
-      console.log("error", error);
+      console.log(error);
 
       return "Contact's not found!";
     }
