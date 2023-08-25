@@ -8,7 +8,7 @@ import { EditOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 //Styles
 import * as styles from "./styles";
-import * as global_styles from "@/components/globalStyle";
+import * as global_styles from "@/styles/globalStyle";
 
 //Hooks
 import useContactAPI from "@/hooks/useContactAPI";
@@ -24,7 +24,7 @@ type Props = {
   ];
 };
 
-export async function ContactCard({ props }: any) {
+export function ContactCard({ props }: any) {
   //Constants
   const router = useRouter();
   const { fetchContactList, deleteContact } = useContactAPI();
@@ -32,15 +32,6 @@ export async function ContactCard({ props }: any) {
   //Functions
   const onHandleEditContact = (id: number) => {
     router.push(`/contacts/edit/${id}`);
-  };
-
-  const onHandleDeleteContact = async (id: number) => {
-    try {
-      const data = await deleteContact(id);
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (
@@ -61,24 +52,19 @@ export async function ContactCard({ props }: any) {
               overflow: "hidden",
               textOverflow: "ellipsis",
               color: "green",
-              fontSize: "12px",
+              fontSize: "14px",
             }}
           >
             {props.last_name} {props.first_name}
           </span>
+
           {props.phones.length !== 0 ? (
-            <span>{props.phones[0]?.number}</span>
+            <span>Phone: {props.phones[0]?.number}</span>
           ) : null}
         </div>
-        <Rate
-          style={{
-            marginLeft: "auto",
-          }}
-          count={1}
-          // value={1}
-        />
+
         {props.phones.length === 0 ? (
-          <Avatar className={global_styles.avatar_style} size={40}>
+          <Avatar className={global_styles.add_number_icon_style} size={40}>
             <PlusOutlined
               style={{
                 color: "white",
@@ -99,12 +85,39 @@ export async function ContactCard({ props }: any) {
           </Avatar>
         )}
         <Avatar
-          onClick={() => onHandleDeleteContact(props.id)}
+          onClick={async () => await props.onHandleDeleteContact(props.id)}
           className={global_styles.delete_icon_style}
           size={40}
         >
           <DeleteOutlined />
         </Avatar>
+        <Rate
+          count={1}
+          onChange={() => {
+            props.setFavourites((prev: any) => {
+              let newDatas = [];
+              if (prev.some((data: any) => data.id == props.id)) {
+                newDatas = prev.filter(
+                  (prevData: any) => prevData.id !== props.id
+                );
+              } else {
+                newDatas = [
+                  ...prev,
+                  {
+                    id: props.id,
+                    first_name: props.first_name,
+                    last_name: props.last_name,
+                  },
+                ];
+              }
+              props.updateFavouriteCache(newDatas);
+              props.forceUpdate();
+
+              return newDatas;
+            });
+          }}
+          value={props.is_fav ? 1 : 0}
+        />
       </div>
     </Col>
   );

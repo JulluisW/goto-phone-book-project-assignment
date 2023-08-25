@@ -1,3 +1,7 @@
+"use client";
+
+import { makeClient } from "@/lib/client-2";
+import { ApolloNextAppProvider } from "@apollo/experimental-nextjs-app-support/ssr";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,10 +19,13 @@ export default function RootLayout({
       <head></head>
       <body
         style={{
-          background: "lightgreen",
+          background: "url('/background.jpg')",
+          backgroundSize: "cover",
         }}
       >
-        {children}
+        <ApolloNextAppProvider makeClient={makeClient}>
+          {children}
+        </ApolloNextAppProvider>
       </body>
     </html>
   );

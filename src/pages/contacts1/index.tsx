@@ -1,8 +1,6 @@
-//Components
 import { ContactList } from "@/templates";
 
-
-export default async function ContactsPage() {
+export default function ContactsPage() {
   return (
     <main>
       <ContactList paging={0} contacts={[]} />

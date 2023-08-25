@@ -7,15 +7,11 @@ export const global_style = cssR`
 }
 `;
 
-export const favourite_header_style = css`
+export const header_style = css`
   width: 100%;
   display: flex;
   margin: 0;
   justify-content: space-between;
-`;
-
-export const title_style = css`
-  margin: 0;
 `;
 
 export const add_button_style = css`
@@ -54,6 +50,9 @@ export const favourite_contact_name_style = css`
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 10px;
+  color: white;
+  text-shadow: 3px 3px brown;
+  font-weight: 600;
 `;
 
 export const contacts_scroller_container_style = css`

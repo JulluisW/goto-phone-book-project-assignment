@@ -1,63 +1,63 @@
 import client from "@/lib/apollo-client";
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
+//Query
+import {
+  ADD_CONTACT,
+  DELETE_CONTACT,
+  EDIT_CONTACT,
+  FETCH_CONTACTS,
+  FETCH_CONTACT_BY_PK,
+  FETCH_PAGINATION_DATA,
+} from "@/query";
 
+// const client = getClient();
 export default function useContactAPI() {
-  const fetchContactList = async (page: number) => {
-    try {
-      const { data } = await client.query({
-        query: gql`
-          query GetContactList(
-            $distinct_on: [contact_select_column!]
-            $limit: Int
-            $offset: Int
-            $order_by: [contact_order_by!]
-            $where: contact_bool_exp
-          ) {
-            contact(
-              distinct_on: $distinct_on
-              limit: $limit
-              offset: $offset
-              order_by: $order_by
-              where: $where
-            ) {
-              created_at
-              first_name
-              id
-              last_name
-              phones {
-                number
-              }
-            }
-          }
-        `,
-        variables: {
-          limit: 10,
-          offset: page * 10 - 10,
-          order_by: [
-            {
-              last_name: "asc",
+  const [deleteContactMutation] = useMutation(DELETE_CONTACT);
+  const [editContactMutation] = useMutation(EDIT_CONTACT);
+
+  const fetchContactList = async (
+    page: number = 1,
+    searchQuery: string | null = null
+  ) => {
+    let whereClauses = null;
+    if (searchQuery) {
+      whereClauses = {
+        _or: [
+          {
+            last_name: {
+              _ilike: searchQuery,
             },
-          ],
-        },
-      });
-      return data.contact;
-    } catch (error) {
-      console.log(error);
+          },
+          {
+            first_name: {
+              _ilike: searchQuery,
+            },
+          },
+        ],
+      };
     }
+
+    const res: any = await client.query({
+      query: FETCH_CONTACTS,
+      variables: {
+        limit: 10,
+        offset: page * 10 - 10,
+        order_by: [
+          {
+            last_name: "asc",
+          },
+        ],
+        where: whereClauses,
+        distinctOn: [],
+      },
+    });
+    return res.data.contact;
   };
 
   const fetchPaginationData = async () => {
     try {
       const { data } = await client.query({
-        query: gql`
-          query Contact_aggregate {
-            contact_aggregate {
-              aggregate {
-                count
-              }
-            }
-          }
-        `,
+        query: FETCH_PAGINATION_DATA,
       });
       return data.contact_aggregate.aggregate.count;
     } catch (error) {
@@ -68,25 +68,56 @@ export default function useContactAPI() {
   const fetchContactByPk = async (id: number) => {
     try {
       const { data } = await client.query({
-        query: gql`
-          query Contact_by_pk($contactByPkId: Int!) {
-            contact_by_pk(id: $contactByPkId) {
-              first_name
-              id
-              last_name
-              phones {
-                number
-                id
-                created_ad
-              }
-            }
-          }
-        `,
+        query: FETCH_CONTACT_BY_PK,
         variables: {
           contactByPkId: id,
         },
       });
       return data.contact_by_pk;
+    } catch (error) {
+      console.log("error", error);
+
+      return "Contact's not found!";
+    }
+  };
+
+  const fetchContactByName = async ({
+    first_name,
+    last_name,
+  }: {
+    first_name: string;
+    last_name: string;
+  }) => {
+    try {
+      const { data } = await client.query({
+        query: gql`
+          query Contact($where: contact_bool_exp) {
+            contact(where: $where) {
+              first_name
+              last_name
+            }
+          }
+        `,
+        variables: {
+          where: {
+            _and: [
+              {
+                _and: [
+                  {
+                    first_name: {
+                      _like: first_name,
+                    },
+                    last_name: {
+                      _like: last_name,
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      });
+      return data.contact;
     } catch (error) {
       console.log("error", error);
 
@@ -104,40 +135,18 @@ export default function useContactAPI() {
     phones: any;
   }) => {
     try {
-      const { data } = await client.mutate({
-        mutation: gql`
-          mutation AddContactWithPhones(
-            $first_name: String!
-            $last_name: String!
-            $phones: [phone_insert_input!]!
-          ) {
-            insert_contact(
-              objects: {
-                first_name: $first_name
-                last_name: $last_name
-                phones: { data: $phones }
-              }
-            ) {
-              returning {
-                first_name
-                last_name
-                id
-                phones {
-                  number
-                }
-              }
-            }
-          }
-        `,
+      const res = await client.mutate({
+        mutation: ADD_CONTACT,
         variables: {
           first_name: first_name,
           last_name: last_name,
           phones: phones,
         },
       });
-      return data;
+      return res;
     } catch (error) {
-      console.log(error);
+      console.log("aaaa", error);
+      return error;
     }
   };
 
@@ -151,19 +160,7 @@ export default function useContactAPI() {
     last_name: string;
   }) => {
     try {
-      const { data } = await client.mutate({
-        mutation: gql`
-          mutation EditContactById($id: Int!, $_set: contact_set_input) {
-            update_contact_by_pk(pk_columns: { id: $id }, _set: $_set) {
-              id
-              first_name
-              last_name
-              phones {
-                number
-              }
-            }
-          }
-        `,
+      const { data } = await editContactMutation({
         variables: {
           id: id,
           _set: {
@@ -172,6 +169,17 @@ export default function useContactAPI() {
           },
         },
       });
+
+      // const { data } = await client.mutate({
+      //   mutation: EDIT_CONTACT,
+      //   variables: {
+      //     id: id,
+      //     _set: {
+      //       first_name: first_name,
+      //       last_name: last_name,
+      //     },
+      //   },
+      // });
       return data;
     } catch (error) {
       console.log(error);
@@ -180,20 +188,22 @@ export default function useContactAPI() {
 
   const deleteContact = async (contactId: number) => {
     try {
-      const { data } = await client.query({
-        query: gql`
-          mutation Delete_contact_by_pk($deleteContactByPkId: Int!) {
-            delete_contact_by_pk(id: $deleteContactByPkId) {
-              first_name
-              id
-              last_name
-              created_at
-            }
-          }
-        `,
+      const { data } = await deleteContactMutation({
         variables: {
           deleteContactByPkId: contactId,
         },
+        // update: (cache) => {
+        //   // Remove the deleted contact from the cache
+        //   cache.modify({
+        //     fields: {
+        //       contact(existingContacts = [], { readField }) {
+        //         return existingContacts.filter(
+        //           (contactRef: any) => contactId !== readField("id", contactRef)
+        //         );
+        //       },
+        //     },
+        //   });
+        // },
       });
 
       return data;
@@ -202,12 +212,42 @@ export default function useContactAPI() {
     }
   };
 
+  const getContactByIds = async (array: []) => {
+    try {
+      const { data } = await client.query({
+        query: gql`
+          query Contact($where: contact_bool_exp) {
+            contact(where: $where) {
+              first_name
+              id
+              last_name
+            }
+          }
+        `,
+        variables: {
+          where: {
+            id: {
+              _in: array,
+            },
+          },
+        },
+      });
+      return data;
+    } catch (error) {
+      console.log("error", error);
+
+      return "Contact's not found!";
+    }
+  };
+
   return {
     fetchContactList,
     fetchPaginationData,
     fetchContactByPk,
+    fetchContactByName,
     addContact,
     editContact,
     deleteContact,
+    getContactByIds,
   };
 }

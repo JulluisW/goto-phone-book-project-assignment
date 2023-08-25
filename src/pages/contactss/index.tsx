@@ -1,7 +1,6 @@
 //Components
 import { ContactList } from "@/templates";
 
-
 export default async function ContactsPage() {
   return (
     <main>
