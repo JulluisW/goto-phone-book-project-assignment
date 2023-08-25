@@ -2,12 +2,12 @@
 
 import { makeClient } from "@/lib/client-2";
 import { ApolloNextAppProvider } from "@apollo/experimental-nextjs-app-support/ssr";
-import type { Metadata } from "next";
+// import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "My Phone Book",
-  description: "Goto",
-};
+// export const metadata: Metadata = {
+//   title: "My Phone Book",
+//   description: "Goto",
+// };
 
 export default function RootLayout({
   children,
