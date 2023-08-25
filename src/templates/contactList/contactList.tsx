@@ -23,7 +23,7 @@ import Search from "antd/es/input/Search";
 import { useQuery } from "@apollo/client";
 
 //Query
-import { FETCH_CONTACTS } from "@/query";
+import { FETCH_CONTACTS, FETCH_PAGINATION_DATA } from "@/query";
 
 //Types
 type Props = {
@@ -33,19 +33,15 @@ type Props = {
 
 export function ContactList({ paging = 0, contacts = [] }: Props) {
   //States
-  const [contactList, setContactList] = useState(contacts);
-  const [totalData, setTotalData] = useState(paging);
+  const [searchQuery, setSearchQuery] = useState("");
+  // const [totalData, setTotalData] = useState(paging);
   const [page, setPage] = useState(1);
   const [favourites, setFavourites] = useState([]);
   const [, updateState] = useState({});
   const forceUpdate = useCallback(() => updateState({}), []);
 
   //Constants
-  const {
-    deleteContact,
-    fetchPaginationData,
-    getContactByIds,
-  } = useContactAPI();
+  const { deleteContact, getContactByIds } = useContactAPI();
   const router = useRouter();
 
   // Functions
@@ -73,15 +69,7 @@ export function ContactList({ paging = 0, contacts = [] }: Props) {
         });
       }
       await refetch();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const refreshPage = async () => {
-    try {
-      const paging = await fetchPaginationData();
-      setTotalData(paging);
+      await pagingRefect();
     } catch (error) {
       console.log(error);
     }
@@ -118,7 +106,8 @@ export function ContactList({ paging = 0, contacts = [] }: Props) {
 
   useEffect(() => {
     fetchFavListFromLocalStorage();
-    refreshPage();
+    refetch();
+    pagingRefect();
   }, []);
 
   const { data, loading, refetch } = useQuery(FETCH_CONTACTS, {
@@ -130,7 +119,48 @@ export function ContactList({ paging = 0, contacts = [] }: Props) {
           last_name: "asc",
         },
       ],
-      // where: whereClauses,
+      where: searchQuery
+        ? {
+            _or: [
+              {
+                last_name: {
+                  _ilike: searchQuery,
+                },
+              },
+              {
+                first_name: {
+                  _ilike: searchQuery,
+                },
+              },
+            ],
+          }
+        : null,
+      distinctOn: [],
+    },
+  });
+
+  const {
+    data: pagingData,
+    loading: pagingLoading,
+    refetch: pagingRefect,
+  } = useQuery(FETCH_PAGINATION_DATA, {
+    variables: {
+      where: searchQuery
+        ? {
+            _or: [
+              {
+                last_name: {
+                  _ilike: searchQuery,
+                },
+              },
+              {
+                first_name: {
+                  _ilike: searchQuery,
+                },
+              },
+            ],
+          }
+        : null,
       distinctOn: [],
     },
   });
@@ -185,7 +215,11 @@ export function ContactList({ paging = 0, contacts = [] }: Props) {
             {/* <PlusOutlined /> */}+ Add
           </h1>
         </div>
-        <Search />
+        <Search
+          onSearch={(value) => {
+            setSearchQuery(value);
+          }}
+        />
         <div className={styles.contacts_scroller_container_style}>
           <Row gutter={[20, 10]}>
             {loading ? (
@@ -213,12 +247,15 @@ export function ContactList({ paging = 0, contacts = [] }: Props) {
           </Row>
         </div>
 
-        <Pagination
-          onChange={onHandleChangePage}
-          current={page}
-          pageSize={10}
-          total={totalData}
-        />
+        {pagingLoading ||
+        pagingData.contact_aggregate.aggregate.count == 0 ? null : (
+          <Pagination
+            onChange={onHandleChangePage}
+            current={page}
+            pageSize={10}
+            total={pagingData.contact_aggregate.aggregate.count}
+          />
+        )}
       </div>
     </div>
   );

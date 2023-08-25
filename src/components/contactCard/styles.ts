@@ -19,3 +19,25 @@ export const contact_card_description_container = css`
   justify-content: center;
   gap: 5px;
 `;
+
+export const contact_card_span = css`
+  display: inline-block;
+  width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: green;
+  font-size: 14px;
+
+  @media only screen and (min-width: 540px) {
+    width: 150px;
+  }
+
+  @media only screen and (min-width: 540px) {
+    width: 250px;
+  }
+
+  @media only screen and (min-width: 767px) {
+    width: 100px;
+  }
+`;

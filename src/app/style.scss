@@ -1,0 +1,15 @@
+.ant-pagination {
+  display: flex;
+  justify-content: center;
+  * {
+    color: gold !important;
+    // text-shadow: 1px 1px brown;
+  }
+
+  &-item {
+    &-active {
+      background-color: transparent !important;
+      border-color: gold !important;
+    }
+  }
+}

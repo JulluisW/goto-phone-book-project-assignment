@@ -3,7 +3,6 @@
 
 import React, { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useRouter as useRouterNext } from "next/router";
 
 //Components
 import { Input, message } from "antd";
@@ -37,7 +36,7 @@ type Phone = {
 };
 
 export function ContactForm({ type = "add", datas, current_id }: Props) {
-  const { data, loading, error, refetch } = useQuery(FETCH_CONTACT_BY_PK, {
+  const { data, loading } = useQuery(FETCH_CONTACT_BY_PK, {
     variables: {
       contactByPkId: Number(current_id),
     },
@@ -85,12 +84,12 @@ export function ContactForm({ type = "add", datas, current_id }: Props) {
         phones: phonesPayload.filter((phone) => phone.number !== ""),
       });
 
-      if (res.data) {
+      if (res.insert_contact) {
         message.success("Add contact success!");
-        router.push("/contacts");
+        router.push("/contacts", {});
+
         return;
       } else {
-        console.log(res);
         message.error(
           "Phone(s) number already in use, please change/edit the number(s)"
         );
@@ -103,12 +102,12 @@ export function ContactForm({ type = "add", datas, current_id }: Props) {
 
   const onHandleEditContact = async () => {
     try {
-      const data = await editContact({
+      await editContact({
         id: Number(current_id),
         first_name: firstName,
         last_name: lastName,
       });
-      console.log("aaa", data);
+      message.success("Edit contact success!");
       router.push("/contacts");
     } catch (error) {
       console.log(error);
@@ -180,7 +179,7 @@ export function ContactForm({ type = "add", datas, current_id }: Props) {
         </h3>
       </div>
       <div className={styles.contact_form_buttons_container}>
-        <button onClick={() => router.push("/contacts")}>Cancel</button>
+        <button onClick={() => router.back()}>Cancel</button>
         <button onClick={onHandleSubmitData}>Submit</button>
       </div>
     </div>

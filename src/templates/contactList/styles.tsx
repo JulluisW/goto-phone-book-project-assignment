@@ -27,6 +27,22 @@ export const favourite_scroller_container_style = css`
   display: flex;
   gap: 10px;
   padding: 0 0 10px 0;
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #818080;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #616060;
+  }
 `;
 
 export const favourite_item_container_style = css`
@@ -57,8 +73,26 @@ export const favourite_contact_name_style = css`
 
 export const contacts_scroller_container_style = css`
   overflow-y: scroll;
-  height: calc(100vh - 300px);
+  overflow-x: hidden;
+  height: calc(100vh - 400px);
   padding: 0;
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #818080;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #616060;
+  }
 `;
 
 export const contacts_item_container_style = css`

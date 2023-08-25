@@ -27,8 +27,8 @@ export const FETCH_CONTACTS = gql`
 `;
 
 export const FETCH_PAGINATION_DATA = gql`
-  query Contact_aggregate {
-    contact_aggregate {
+  query Contact($where: contact_bool_exp) {
+    contact_aggregate(where: $where) {
       aggregate {
         count
       }

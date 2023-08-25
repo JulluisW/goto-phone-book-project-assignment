@@ -14,6 +14,7 @@ import {
 export default function useContactAPI() {
   const [deleteContactMutation] = useMutation(DELETE_CONTACT);
   const [editContactMutation] = useMutation(EDIT_CONTACT);
+  const [addContactMutation] = useMutation(ADD_CONTACT);
 
   const fetchContactList = async (
     page: number = 1,
@@ -75,8 +76,6 @@ export default function useContactAPI() {
       });
       return data.contact_by_pk;
     } catch (error) {
-      console.log("error", error);
-
       return "Contact's not found!";
     }
   };
@@ -135,17 +134,15 @@ export default function useContactAPI() {
     phones: any;
   }) => {
     try {
-      const res = await client.mutate({
-        mutation: ADD_CONTACT,
+      const { data } = await addContactMutation({
         variables: {
           first_name: first_name,
           last_name: last_name,
           phones: phones,
         },
       });
-      return res;
+      return data;
     } catch (error) {
-      console.log("aaaa", error);
       return error;
     }
   };

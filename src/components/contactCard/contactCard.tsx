@@ -11,7 +11,6 @@ import * as styles from "./styles";
 import * as global_styles from "@/styles/globalStyle";
 
 //Hooks
-import useContactAPI from "@/hooks/useContactAPI";
 
 //Types
 type Props = {
@@ -27,7 +26,6 @@ type Props = {
 export function ContactCard({ props }: any) {
   //Constants
   const router = useRouter();
-  const { fetchContactList, deleteContact } = useContactAPI();
 
   //Functions
   const onHandleEditContact = (id: number) => {
@@ -35,7 +33,7 @@ export function ContactCard({ props }: any) {
   };
 
   return (
-    <Col xs={24} sm={12} md={8} lg={6} xl={6} xxl={6}>
+    <Col xs={24} sm={24} md={12} lg={8} xl={8} xxl={8}>
       <div className={styles.contact_card_container}>
         <Avatar className={global_styles.avatar_style} size={40}>
           <span className={global_styles.avatar_title_style}>
@@ -44,23 +42,15 @@ export function ContactCard({ props }: any) {
           </span>
         </Avatar>
         <div className={styles.contact_card_description_container}>
-          <span
-            style={{
-              display: "inline-block",
-              width: "100px",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              color: "green",
-              fontSize: "14px",
-            }}
-          >
+          <span>
             {props.last_name} {props.first_name}
           </span>
 
-          {props.phones.length !== 0 ? (
-            <span>Phone: {props.phones[0]?.number}</span>
-          ) : null}
+          <span className={styles.contact_card_span}>
+            {props.phones.length !== 0
+              ? `Phone: ${props.phones[0]?.number}`
+              : "="}
+          </span>
         </div>
 
         {props.phones.length === 0 ? (
